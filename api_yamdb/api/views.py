@@ -4,15 +4,19 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import (IsAuthenticatedOrReadOnly)
 
 from reviews.models import Category, Genre, Title
+from api.filters import TitleFilter
+from api.permissions import IsAdminOrReadOnly
 from api.serializers import (CategorySerializer, GenreSerializer,
                              TitleSerializer, TitlesViewSerializer)
 
 
-class TitlesViewSet(viewsets.ModelViewSet):
+class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.annotate()
     serializer_class = TitleSerializer
+    permission_classes = IsAdminOrReadOnly
     pagination_class = PageNumberPagination
     filter_backends = (DjangoFilterBackend,)
+    filterset_class = TitleFilter
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:
@@ -27,18 +31,19 @@ class ReviewGenreModelMixin(
     viewsets.GenericViewSet
 ):
     permission_classes = [
-        IsAuthenticatedOrReadOnly
+        IsAuthenticatedOrReadOnly,
+        IsAdminOrReadOnly
     ]
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name', 'slug')
     lookup_field = 'slug'
 
 
-class CategoriesViewSet(ReviewGenreModelMixin):
+class CategoryViewSet(ReviewGenreModelMixin):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
 
-class GenresViewSet(ReviewGenreModelMixin):
+class GenreViewSet(ReviewGenreModelMixin):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
