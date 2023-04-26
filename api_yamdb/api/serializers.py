@@ -1,7 +1,9 @@
 import datetime as dt
 from rest_framework import serializers
+from rest_framework.relations import SlugRelatedField
 
-from reviews.models import Category, Genre, Title, User
+
+from reviews.models import Category, Genre, Title, User, Review, Comment
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -75,3 +77,40 @@ class TitlesViewSerializer(serializers.ModelSerializer):
             'genre',
             'category'
         )
+
+
+class ReviewsSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        slug_field='username',
+        read_only=True
+    )
+
+    class Meta:
+        fields = '__all__'
+        model = Review
+        read_only_fields = ['title']
+
+    def validate(self, data):
+        if self.context['request'].method == 'POST':
+            title_id = (
+                self.context['request'].parser_context['kwargs']['title_id']
+            )
+            user = self.context['request'].user
+            if user.reviews.filter(title_id=title_id).exists():
+                raise serializers.ValidationError(
+                    'Нельзя дважды писать отзыв к одному произведению!'
+                )
+        return data
+
+    def validate_score(self, value):
+        if 0 >= value >= 10:
+            raise serializers.ValidationError('Проверьте поставленную оценку!')
+        return value
+
+
+class CommentsSerializer(serializers.ModelSerializer):
+    author = SlugRelatedField(slug_field='username', read_only=True)
+
+    class Meta:
+        fields = ('id', 'text', 'author', 'pub_date')
+        model = Comment
