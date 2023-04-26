@@ -23,7 +23,7 @@ class UserViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'list', 'post', 'patch', 'delete', ]
     search_fields = ['username', ]
     lookup_field = 'username'
-#Вадим: дописать функцию доступа
+# Вадим: дописать функцию доступа
 
 
 class TitleViewSet(viewsets.ModelViewSet):
