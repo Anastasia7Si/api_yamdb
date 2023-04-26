@@ -1,6 +1,14 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 
+class AdminOnly(BasePermission):
+    def has_permission(self, request, view):
+        return (
+            request.user.is_admin
+            or request.user.is_staff
+        )
+
+
 class IsAuthorOrReadOnly(BasePermission):
     def has_permission(self, request, view):
         return (

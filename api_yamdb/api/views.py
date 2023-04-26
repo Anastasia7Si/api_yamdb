@@ -5,14 +5,25 @@ from rest_framework import filters, mixins, viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import (IsAuthenticatedOrReadOnly)
 
-from reviews.models import Category, Genre, Title
+from reviews.models import Category, Genre, Title, User
 from api.filters import TitleFilter
+
 from api.permissions import (IsAdminOrReadOnly, AuthorAndStaffOrReadOnly,
                              AdminOnly)
 from api.serializers import (CategorySerializer, GenreSerializer,
                              TitleSerializer, TitlesViewSerializer,
                              ReviewsSerializer, CommentsSerializer,
                              UserSerializer)
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [AdminOnly, ]
+    http_method_names = ['get', 'list', 'post', 'patch', 'delete', ]
+    search_fields = ['username', ]
+    lookup_field = 'username'
+#Вадим: дописать функцию доступа
 
 
 class TitleViewSet(viewsets.ModelViewSet):

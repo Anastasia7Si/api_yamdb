@@ -2,7 +2,17 @@ import datetime as dt
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 
+
 from reviews.models import Category, Genre, Title, User, Review, Comment
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'username', 'email', 'first_name', 'last_name',
+            'bio', 'role'
+        )
+        model = User
 
 
 class CategorySerializer(serializers.ModelSerializer):
