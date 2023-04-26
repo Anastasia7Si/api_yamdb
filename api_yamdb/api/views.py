@@ -7,10 +7,12 @@ from rest_framework.permissions import (IsAuthenticatedOrReadOnly)
 
 from reviews.models import Category, Genre, Title
 from api.filters import TitleFilter
-from api.permissions import IsAdminOrReadOnly, AuthorAndStaffOrReadOnly
+from api.permissions import (IsAdminOrReadOnly, AuthorAndStaffOrReadOnly,
+                             AdminOnly)
 from api.serializers import (CategorySerializer, GenreSerializer,
                              TitleSerializer, TitlesViewSerializer,
-                             ReviewsSerializer, CommentsSerializer)
+                             ReviewsSerializer, CommentsSerializer,
+                             UserSerializer)
 
 
 class TitleViewSet(viewsets.ModelViewSet):
