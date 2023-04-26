@@ -6,13 +6,15 @@ from api.views import (
     GenreViewSet,
     CategoryViewSet,
     TitleViewSet,
+    UserViewSet
     ReviewViewSet,
-    CommentViewSet
+    CommentViewSet,
 )
 
 app_name = 'api'
 
 router = DefaultRouter()
+router.register('users', UserViewSet, basename='users'),
 router.register('genres', GenreViewSet, basename='genres')
 router.register('categories', CategoryViewSet, basename='categories')
 router.register('titles', TitleViewSet, basename='titles')
@@ -27,4 +29,5 @@ router.register(
 
 urlpatterns = [
     path('v1/', include(router.urls)),
+    #Вадим: добавить авторизацию и токен
 ]
