@@ -1,6 +1,7 @@
 import datetime as dt
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
+from rest_framework.validators import UniqueTogetherValidator
 
 
 from reviews.models import Category, Genre, Title, User, Review, Comment
@@ -114,3 +115,51 @@ class CommentsSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'text', 'author', 'pub_date')
         model = Comment
+
+
+class TokenSerializer(serializers.Serializer):
+    username = serializers.CharField(required=True)
+    confirmation_code = serializers.CharField(required=True)
+
+    class Meta:
+        model = User
+        fields = ('username', 'confirmation_code')
+
+
+class SignUpSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    email = serializers.EmailField()
+
+    def validate(self, data):
+        username = data.get('username')
+        email = data.get('email')
+        if User.objects.filter(
+            username__iexact=username, email__iexact=email
+        ).exists():
+            return data
+        return data
+
+
+class SignUpValidationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('username', 'email',)
+        validators = [UniqueTogetherValidator(queryset=User.objects.all(),
+                                              fields=['username', 'email']), ]
+
+    def valid_username(self, username):
+        if username.lower() == 'me':
+            raise serializers.ValidationError('Имя недопустимо')
+        if User.objects.filter(username__iexact=username).exists():
+            raise serializers.ValidationError(
+                'Пользователь с таким именем уже зарегистрирован'
+            )
+        return username
+
+    def validate_email(self, email):
+        if User.objects.filter(email__iexact=email).exists():
+            raise serializers.ValidationError(
+                'Пользователь с таким адресом уже зарегистрирован'
+            )
+        return email

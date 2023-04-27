@@ -2,14 +2,9 @@ from django.urls import include, path
 
 from rest_framework.routers import DefaultRouter
 
-from api.views import (
-    GenreViewSet,
-    CategoryViewSet,
-    TitleViewSet,
-    UserViewSet
-    ReviewViewSet,
-    CommentViewSet,
-)
+from api.views import (GenreViewSet, CategoryViewSet, TitleViewSet,
+                       UserViewSet, ReviewViewSet, CommentViewSet, APISignUp,
+                       APITokenView)
 
 app_name = 'api'
 
@@ -29,5 +24,6 @@ router.register(
 
 urlpatterns = [
     path('v1/', include(router.urls)),
-    #Вадим: добавить авторизацию и токен
+    path('v1/auth/signup/', APISignUp.as_view(), name='signup'),
+    path('v1/auth/token/', APITokenView.as_view(), name='get_token'),
 ]
