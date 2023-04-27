@@ -1,12 +1,46 @@
 # api_yamdb
 api_yamdb
 
-pip install sqlite-utils
+### Как запустить проект:
 
-sqlite-utils insert db.sqlite3 reviews_genre static/data/genre.csv --csv
+Клонировать репозиторий и перейти в него в командной строке:
 
-sqlite-utils insert db.sqlite3 reviews_category static/data/category.csv --csv
+```
+git clone https://github.com/Anastasia7Si/api_yamdb.git
+```
 
-# sqlite-utils insert db.sqlite3 reviews_user static/data/users.csv --csv
+```
+cd api_yamdb
+```
 
-sqlite-utils insert db.sqlite3 reviews_title static/data/titles.csv --csv
+Cоздать и активировать виртуальное окружение:
+
+```
+python3 -m venv env
+```
+
+```
+source env/bin/activate
+```
+
+Установить зависимости из файла requirements.txt:
+
+```
+python3 -m pip install --upgrade pip
+```
+
+```
+pip install -r requirements.txt
+```
+
+Выполнить миграции:
+
+```
+python3 manage.py migrate
+```
+
+Запустить проект:
+
+```
+python3 manage.py runserver
+```
