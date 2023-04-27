@@ -29,8 +29,8 @@ source venv/Scripts/activate
 pip install -r requirements.txt
 
 Выполнить миграции:
-python3 manage.py makemigrations
-python3 manage.py migrate
+python manage.py makemigrations
+python manage.py migrate
 
 Запустить проект:
 python3 manage.py runserver
