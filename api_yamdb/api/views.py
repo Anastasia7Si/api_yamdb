@@ -3,7 +3,12 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Avg
 from rest_framework import filters, mixins, viewsets
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import (IsAuthenticatedOrReadOnly)
+from rest_framework.permissions import (IsAuthenticatedOrReadOnly,
+                                        IsAuthenticated)
+from rest_framework.decorators import action
+from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from reviews.models import Category, Genre, Title, User
 from api.filters import TitleFilter
@@ -13,7 +18,7 @@ from api.permissions import (IsAdminOrReadOnly, AuthorAndStaffOrReadOnly,
 from api.serializers import (CategorySerializer, GenreSerializer,
                              TitleSerializer, TitlesViewSerializer,
                              ReviewsSerializer, CommentsSerializer,
-                             UserSerializer)
+                             UserSerializer, TokenSerializer)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -23,7 +28,28 @@ class UserViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'list', 'post', 'patch', 'delete', ]
     search_fields = ['username', ]
     lookup_field = 'username'
-# Вадим: дописать функцию доступа
+
+    @action(detail=False, permission_classes=(IsAuthenticated,),
+            methods=['GET', 'PATCH'])
+    def me(self, request):
+        self.kwargs['username'] = request.user.username
+        if request.method == 'PATCH':
+            return self.partial_update(request)
+        return self.retrieve(request)
+
+    def perform_update(self, serializer):
+        if self.action == 'me':
+            serializer.save(role=self.request.user.role)
+        else:
+            serializer.save()
+
+
+class APITokenView(APIView):
+    def post(self, request):
+        serializer = TokenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        token = AccessToken.for_user(serializer.validated_data['user'])
+        return Response({'token': str(token)})
 
 
 class TitleViewSet(viewsets.ModelViewSet):
