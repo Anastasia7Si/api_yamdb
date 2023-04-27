@@ -33,7 +33,10 @@ python manage.py makemigrations
 python manage.py migrate
 
 Запустить проект:
-python3 manage.py runserver
+python manage.py runserver
+
+Клонирование базы:
+python manage.py convert_csv_to_bd_sqlite
 
 Технологии:
 
