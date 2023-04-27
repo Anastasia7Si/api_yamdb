@@ -16,6 +16,21 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
 
 
+class UserReadSerializer(serializers.ModelSerializer):
+    role = serializers.CharField(read_only=True)
+
+    class Meta:
+        fields = (
+            'first_name',
+            'last_name',
+            'username',
+            'bio',
+            'email',
+            'role'
+        )
+        model = User
+
+
 class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:

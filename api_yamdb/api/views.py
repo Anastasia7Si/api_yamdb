@@ -11,6 +11,7 @@ from rest_framework.permissions import (IsAuthenticatedOrReadOnly,
                                         IsAuthenticated, AllowAny)
 from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework_simplejwt.views import TokenViewBase
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -23,33 +24,41 @@ from api.serializers import (CategorySerializer, GenreSerializer,
                              TitleSerializer, TitlesViewSerializer,
                              ReviewsSerializer, CommentsSerializer,
                              UserSerializer, TokenSerializer, SignUpSerializer,
-                             SignUpValidationSerializer, )
+                             SignUpValidationSerializer, UserReadSerializer)
 
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [AdminOnly, ]
-    http_method_names = ['get', 'list', 'post', 'patch', 'delete', ]
+    permission_classes = [AdminOnly, IsAuthenticated, ]
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    http_method_names = ['get', 'post', 'patch', 'delete', ]
     search_fields = ['username', ]
     lookup_field = 'username'
 
-    @action(detail=False, permission_classes=(IsAuthenticated,),
+    @action(detail=False, permission_classes=[IsAuthenticated], url_path='me',
             methods=['GET', 'PATCH'])
     def me(self, request):
-        self.kwargs['username'] = request.user.username
+        user = request.user
+        if request.method == 'GET':
+            serializer = UserSerializer(user)
+            return Response(
+                serializer.data,
+                status=status.HTTP_200_OK)
         if request.method == 'PATCH':
-            return self.partial_update(request)
-        return self.retrieve(request)
-
-    def perform_update(self, serializer):
-        if self.action == 'me':
-            serializer.save(role=self.request.user.role)
-        else:
+            serializer = UserReadSerializer(
+                user,
+                data=request.data,
+                partial=True)
+            serializer.is_valid(raise_exception=True)
             serializer.save()
+            return Response(
+                serializer.data,
+                status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
-class APITokenView(APIView):
+class APITokenView(TokenViewBase):
     permission_classes = (AllowAny,)
 
     def post(self, request):
@@ -86,7 +95,7 @@ class APISignUp(APIView):
         confirmation_code = default_token_generator.make_token(user)
         mail_subject = 'Код подтверждения для получения токена'
         message = f'Код - {confirmation_code}'
-        send_mail(mail_subject, message, settings.EMAIL_FROM, (email, ))
+        send_mail(mail_subject, message, settings.EMAIL, (email, ))
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
