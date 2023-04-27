@@ -1,10 +1,14 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from django.db.models import Avg
-from rest_framework import filters, mixins, viewsets
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
+from django.conf import settings
+from rest_framework import filters, mixins, viewsets, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import (IsAuthenticatedOrReadOnly,
-                                        IsAuthenticated)
+                                        IsAuthenticated, AllowAny)
 from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework.response import Response
@@ -18,7 +22,8 @@ from api.permissions import (IsAdminOrReadOnly, AuthorAndStaffOrReadOnly,
 from api.serializers import (CategorySerializer, GenreSerializer,
                              TitleSerializer, TitlesViewSerializer,
                              ReviewsSerializer, CommentsSerializer,
-                             UserSerializer, TokenSerializer)
+                             UserSerializer, TokenSerializer, SignUpSerializer,
+                             SignUpValidationSerializer)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -50,6 +55,28 @@ class APITokenView(APIView):
         serializer.is_valid(raise_exception=True)
         token = AccessToken.for_user(serializer.validated_data['user'])
         return Response({'token': str(token)})
+
+
+class APISignUp(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        serializer = SignUpSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        username = serializer.validated_data.get('username')
+        email = serializer.validated_data.get('email')
+        try:
+            user = User.objects.get(
+                username__iexact=username, email__iexact=email)
+        except ObjectDoesNotExist:
+            user_serializer = SignUpValidationSerializer(data=request.data)
+            user_serializer.is_valid(raise_exception=True)
+            user = user_serializer.save()
+        confirmation_code = default_token_generator.make_token(user)
+        mail_subject = 'Код подтверждения для получения токена'
+        message = f'Код - {confirmation_code}'
+        send_mail(mail_subject, message, settings.EMAIL_FROM, (email, ))
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
 class TitleViewSet(viewsets.ModelViewSet):
