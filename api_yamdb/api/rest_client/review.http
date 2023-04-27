@@ -1,1 +1,19 @@
 GET http://127.0.0.1:8000/api/v1/titles/1/reviews/
+###
+PATCH http://127.0.0.1:8000/api/v1/titles/1/reviews/1/
+Authorization: Bearer {{$dotenv moderator_token}}
+Content-Type: application/json
+
+{
+    "text": "asd",
+    "score": 1
+}
+###
+PATCH http://127.0.0.1:8000/api/v1/titles/1/reviews/1/
+Authorization: Bearer {{$dotenv admin_token}}
+Content-Type: application/json
+
+{
+    "text": "asds",
+    "score": 1
+}

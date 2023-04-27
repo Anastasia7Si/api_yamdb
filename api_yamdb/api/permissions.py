@@ -47,6 +47,7 @@ class AuthorAndStaffOrReadOnly(BasePermission):
                 and (
                     obj.author == request.user
                     or request.user.is_moderator
+                    or request.user.is_admin
                 )
             )
         )

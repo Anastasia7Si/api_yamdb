@@ -1,0 +1,52 @@
+POST http://127.0.0.1:8000/api/v1/auth/signup/
+Content-Type: application/json
+
+{
+    "email": "moderator@mail.ru",
+    "username": "moderator"
+}
+###
+
+POST http://127.0.0.1:8000/api/v1/auth/token/
+Content-Type: application/json
+
+{
+    "username": "moderator",
+    "confirmation_code": "bnbt0f-bf5cfc4c33b6b1a5fbfe6d0f20b43a76"
+}
+###
+
+POST http://127.0.0.1:8000/api/v1/auth/signup/
+Content-Type: application/json
+
+{
+    "email": "admin@mail.ru",
+    "username": "admin"
+}
+###
+
+POST http://127.0.0.1:8000/api/v1/auth/token/
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "confirmation_code": "bnbt4x-9363be7e987524135da36990dd7469f6"
+}
+###
+
+POST http://127.0.0.1:8000/api/v1/auth/signup/
+Content-Type: application/json
+
+{
+    "email": "user@mail.ru",
+    "username": "user"
+}
+###
+
+POST http://127.0.0.1:8000/api/v1/auth/token/
+Content-Type: application/json
+
+{
+    "username": "user",
+    "confirmation_code": "bnbt7n-754e802888e37c69d435e582fb29d848"
+}
