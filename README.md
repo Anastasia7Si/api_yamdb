@@ -12,38 +12,39 @@
 Пользователи могут оставлять комментарии к отзывам.
 Добавлять отзывы, комментарии и ставить оценки могут только аутентифицированные пользователи.
 
-Техническое описание проекта YaMDb
 
-Для запуска проекта необходимо клонировать репозиторий и перейти в него в командной строке:
-git clone git@github.com:Anastasia7Si/api_yamdb.git 
+К проекту подключен REDOC, в ктором можно ознакомиться с  эндпоинтами и методами, а также с примерами запросов, ответов и кода: http://127.0.0.1:8000/redoc/
+
+Как запустить проект:
+
+Клонировать репозиторий и перейти в него в командной строке:
+git clone git@github.com:Anastasia7Si/api_yamdb.git
 cd api_yamdb
 
 Cоздать и активировать виртуальное окружение:
-python -m venv venv         
-venv/Scripts/activate.bat    
+python -m venv venv
+source venv/Scripts/activate
 
 Установить зависимости из файла requirements.txt:
 pip install -r requirements.txt
 
 Выполнить миграции:
-python manage.py migrate  
+python3 manage.py makemigrations
+python3 manage.py migrate
 
 Запустить проект:
-python manage.py runserver 
+python3 manage.py runserver
 
-Документация доступна после запуска по адресу:
+Технологии:
 
-http://127.0.0.1/redoc/
-
-Использованные технологии:
-
-Python 3.9
+Python 3.7
 Django 3.2
-Django Rest Framework 3.12.4
-Simple-JWT 4.7.2
+Django REST framework 3.12
+Simple JWT 4.7.2
+
 
 Авторы:
 
-Пушкарная Анастасия
-Вадим Мастенов
-Дмитрий Бражников
+- Анастасия Пушкарная(https://github.com/Anastasia7Si)
+- Вадим Мастенов(https://github.com/vadimastenov)
+- Дмитрий Бражников(https://github.com/maybeYOLO)
