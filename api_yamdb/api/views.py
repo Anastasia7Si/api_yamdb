@@ -23,7 +23,7 @@ from api.serializers import (CategorySerializer, GenreSerializer,
                              TitleSerializer, TitlesViewSerializer,
                              ReviewsSerializer, CommentsSerializer,
                              UserSerializer, TokenSerializer, SignUpSerializer,
-                             SignUpValidationSerializer)
+                             SignUpValidationSerializer, )
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -50,11 +50,22 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class APITokenView(APIView):
+    permission_classes = (AllowAny,)
+
     def post(self, request):
         serializer = TokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        token = AccessToken.for_user(serializer.validated_data['user'])
-        return Response({'token': str(token)})
+        username = serializer.validated_data.get('username')
+        user = get_object_or_404(User, username=username)
+        if default_token_generator.check_token(
+            user, serializer.validated_data.get("confirmation_code")
+        ):
+            token = AccessToken.for_user(user)
+            return Response({'token': f'{token}'}, status=status.HTTP_200_OK)
+        return Response(
+            {'confirmation_code': ['Код недействителен!']},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 class APISignUp(APIView):
