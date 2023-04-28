@@ -62,9 +62,9 @@ class SignUpValidationSerializer(serializers.ModelSerializer):
         validators = [UniqueTogetherValidator(queryset=User.objects.all(),
                                               fields=['username', 'email']), ]
 
-    def valid_username(self, username):
+    def validate_username(self, username):
         if username.lower() == 'me':
-            raise serializers.ValidationError('Имя недопустимо')
+            raise serializers.ValidationError('Имя не может быть me')
         if User.objects.filter(username__iexact=username).exists():
             raise serializers.ValidationError(
                 'Пользователь с таким именем уже зарегистрирован'
