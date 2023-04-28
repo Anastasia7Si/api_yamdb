@@ -2,11 +2,14 @@ from datetime import timedelta
 from pathlib import Path
 import os
 
+from dotenv import load_dotenv
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'p&l%385148kslhtyn^##a1)ilz@4zqj=rq&agdol^##zgl9(vs'
+load_dotenv()
+SECRET_KEY = os.getenv('SECRET_KEY', default='secret_key')
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -64,8 +67,6 @@ DATABASES = {
     }
 }
 
-AUTH_USER_MODEL = 'reviews.User'
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -98,6 +99,7 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = ((BASE_DIR / 'static/'),)
 
+AUTH_USER_MODEL = 'reviews.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

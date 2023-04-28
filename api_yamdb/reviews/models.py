@@ -4,42 +4,34 @@ from django.core.validators import (MaxValueValidator,
                                     MinValueValidator,
                                     RegexValidator)
 
-ADMIN = 'admin'
-MODERATOR = 'moderator'
-USER = 'user'
-
-ROLES = [
-    (ADMIN, ADMIN),
-    (MODERATOR, MODERATOR),
-    (USER, USER),
-]
-
 username_validator = RegexValidator(r"^[\w.@+-]+")
 
 
 class User(AbstractUser):
-    username = models.CharField(
-        max_length=150, unique=True, validators=[username_validator]
-    )
+    ADMIN = 'admin'
+    MODERATOR = 'moderator'
+    USER = 'user'
+
+    ROLE_CHOICES = [
+        (ADMIN, 'admin'),
+        (MODERATOR, 'moderator'),
+        (USER, 'user')
+    ]
+    username = models.CharField(max_length=150, unique=True,
+                                validators=[username_validator])
+    email = models.EmailField(max_length=254, unique=True)
     first_name = models.CharField(max_length=150, blank=True)
     last_name = models.CharField(max_length=150, blank=True)
-    email = models.EmailField(blank=True, unique=True)
-    role = models.CharField(max_length=10, choices=ROLES, default=USER)
-    bio = models.TextField(null=True, blank=True)
-    password = models.CharField(max_length=128, null=True, blank=True)
-    confirmation_code = models.CharField(max_length=200, null=True, blank=True)
-
-    @property
-    def is_user(self):
-        return self.role == USER
-
-    @property
-    def is_admin(self):
-        return self.role == ADMIN or self.is_staff or self.is_superuser
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default=USER)
+    bio = models.TextField(blank=True)
 
     @property
     def is_moderator(self):
-        return self.role == MODERATOR
+        return self.role == User.MODERATOR
+
+    @property
+    def is_admin(self):
+        return self.role == User.ADMIN or self.is_staff or self.is_superuser
 
 
 class Category(models.Model):

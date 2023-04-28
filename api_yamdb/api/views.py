@@ -23,18 +23,19 @@ from api.permissions import (IsAdminOrReadOnly, AuthorAndStaffOrReadOnly,
 from api.serializers import (CategorySerializer, GenreSerializer,
                              TitleSerializer, TitlesViewSerializer,
                              ReviewsSerializer, CommentsSerializer,
-                             UserSerializer, TokenSerializer, SignUpSerializer,
-                             SignUpValidationSerializer, UserReadSerializer)
+                             UserSerializer, TokenSerializer,
+                             SignUpSerializer, SignUpValidationSerializer,
+                             UserReadOnlySerializer)
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
     permission_classes = [AdminOnly, IsAuthenticated, ]
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
-    http_method_names = ['get', 'post', 'patch', 'delete', ]
     search_fields = ['username', ]
     lookup_field = 'username'
+    http_method_names = ['get', 'post', 'patch', 'delete', ]
 
     @action(detail=False, permission_classes=[IsAuthenticated], url_path='me',
             methods=['GET', 'PATCH'])
@@ -46,7 +47,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 serializer.data,
                 status=status.HTTP_200_OK)
         if request.method == 'PATCH':
-            serializer = UserReadSerializer(
+            serializer = UserReadOnlySerializer(
                 user,
                 data=request.data,
                 partial=True)
@@ -67,12 +68,12 @@ class APITokenView(TokenViewBase):
         username = serializer.validated_data.get('username')
         user = get_object_or_404(User, username=username)
         if default_token_generator.check_token(
-            user, serializer.validated_data.get("confirmation_code")
+            user, serializer.validated_data.get('Код')
         ):
             token = AccessToken.for_user(user)
-            return Response({'token': f'{token}'}, status=status.HTTP_200_OK)
+            return Response({'Токен': f'{token}'}, status=status.HTTP_200_OK)
         return Response(
-            {'confirmation_code': ['Код недействителен!']},
+            {'Код': ['Код подтверждения недействителен!']},
             status=status.HTTP_400_BAD_REQUEST
         )
 
