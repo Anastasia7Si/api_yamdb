@@ -1,7 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from django.db.models import Avg
-from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.conf import settings
@@ -56,7 +55,6 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response(
                 serializer.data,
                 status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 class APITokenView(TokenViewBase):
@@ -89,7 +87,7 @@ class APISignUp(APIView):
         try:
             user = User.objects.get(
                 username__iexact=username, email__iexact=email)
-        except ObjectDoesNotExist:
+        except User.DoesNotExist:
             user_serializer = SignUpValidationSerializer(data=request.data)
             user_serializer.is_valid(raise_exception=True)
             user = user_serializer.save()
