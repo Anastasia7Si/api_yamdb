@@ -16,19 +16,8 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
 
 
-class UserReadOnlySerializer(serializers.ModelSerializer):
+class UserReadOnlySerializer(UserSerializer):
     role = serializers.CharField(read_only=True)
-
-    class Meta:
-        fields = (
-            'first_name',
-            'last_name',
-            'username',
-            'bio',
-            'email',
-            'role'
-        )
-        model = User
 
 
 class TokenSerializer(serializers.Serializer):

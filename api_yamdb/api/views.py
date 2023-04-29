@@ -56,7 +56,6 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response(
                 serializer.data,
                 status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 class APITokenView(TokenViewBase):
@@ -89,7 +88,7 @@ class APISignUp(APIView):
         try:
             user = User.objects.get(
                 username__iexact=username, email__iexact=email)
-        except ObjectDoesNotExist:
+        except User.DoesNotExist:
             user_serializer = SignUpValidationSerializer(data=request.data)
             user_serializer.is_valid(raise_exception=True)
             user = user_serializer.save()
