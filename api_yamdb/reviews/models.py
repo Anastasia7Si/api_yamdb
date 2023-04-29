@@ -91,8 +91,8 @@ class Review(models.Model):
         verbose_name='Оценка',
         default=0,
         validators=[
-            MaxValueValidator(10),
-            MinValueValidator(1)
+            MaxValueValidator(10, 'Максимальная оценка - 10'),
+            MinValueValidator(1, 'Минимальная оценка - 1')
         ],
     )
 
