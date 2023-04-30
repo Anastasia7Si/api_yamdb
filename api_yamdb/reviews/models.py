@@ -4,6 +4,8 @@ from django.core.validators import (MaxValueValidator,
                                     MinValueValidator,
                                     RegexValidator)
 
+from reviews.validators import validate_year
+
 username_validator = RegexValidator(r"^[\w.@+-]+")
 
 
@@ -52,7 +54,10 @@ class Genre(models.Model):
 
 class Title(models.Model):
     name = models.CharField(max_length=256)
-    year = models.IntegerField(verbose_name='Год релиза')
+    year = models.IntegerField(
+        verbose_name='Год релиза',
+        validators=(validate_year,),
+    )
     description = models.TextField(null=True, verbose_name='Описание')
     genre = models.ManyToManyField(
         Genre,
