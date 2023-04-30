@@ -4,10 +4,9 @@ from django.db.models import Avg
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.conf import settings
-from rest_framework import filters, mixins, viewsets, status
+from rest_framework import filters, viewsets, status
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import (IsAuthenticatedOrReadOnly,
-                                        IsAuthenticated, AllowAny)
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.views import TokenViewBase
@@ -15,8 +14,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from reviews.models import Category, Genre, Title, User
+from api.mixins import ReviewGenreModelMixin
 from api.filters import TitleFilter
-
 from api.permissions import (IsAdminOrReadOnly, AuthorAndStaffOrReadOnly,
                              AdminOnly)
 from api.serializers import (CategorySerializer, GenreSerializer,
@@ -110,21 +109,6 @@ class TitleViewSet(viewsets.ModelViewSet):
         if self.action in ['list', 'retrieve']:
             return TitlesViewSerializer
         return TitleSerializer
-
-
-class ReviewGenreModelMixin(
-    mixins.CreateModelMixin,
-    mixins.ListModelMixin,
-    mixins.DestroyModelMixin,
-    viewsets.GenericViewSet
-):
-    permission_classes = [
-        IsAuthenticatedOrReadOnly,
-        IsAdminOrReadOnly
-    ]
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name', 'slug')
-    lookup_field = 'slug'
 
 
 class CategoryViewSet(ReviewGenreModelMixin):

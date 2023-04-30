@@ -1,8 +1,7 @@
-import datetime as dt
+from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueTogetherValidator
-
 
 from reviews.models import Category, Genre, Title, User, Review, Comment
 
@@ -71,15 +70,15 @@ class SignUpValidationSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
-        fields = ('name', 'slug')
         model = Category
+        exclude = ('id', )
 
 
 class GenreSerializer(serializers.ModelSerializer):
 
     class Meta:
-        fields = ('name', 'slug')
         model = Genre
+        exclude = ('id', )
 
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -99,7 +98,7 @@ class TitleSerializer(serializers.ModelSerializer):
         model = Title
 
     def validate_year(self, value):
-        current_year = dt.date.today().year
+        current_year = timezone.today().year
         if value > current_year:
             raise serializers.ValidationError('Проверьте вводимый год!')
         return value
